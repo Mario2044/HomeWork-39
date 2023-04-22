@@ -1,60 +1,44 @@
 import React, { useState } from 'react';
 
 const SMILEYS = [
-  { id: 1, emoji: "😀" },
-  { id: 2, emoji: "😍" },
-  { id: 3, emoji: "🤔" },
-  { id: 4, emoji: "🥳" },
+  {id: 1, icon: '😀'},
+  {id: 2, icon: '😍'},
+  {id: 3, icon: '😂'},
+  {id: 4, icon: '🤔'},
 ];
 
-function Smiley({ id, emoji }) {
-  const [votes, setVotes] = useState(0);
+const GiveBestSmiley = () => {
+  const [smileys, setSmileys] = useState(SMILEYS);
+  const [counts, setCounts] = useState({});
 
-  const handleClick = () => {
-    setVotes(votes + 1);
+  const handleClick = (id) => {
+    const newCounts = {...counts};
+    newCounts[id] = (counts[id] || 0) + 1;
+    setCounts(newCounts);
+  };
+
+  const handleShowResults = () => {
+    const maxCount = Math.max(...Object.values(counts));
+    const winningSmileys = smileys.filter((smiley) => counts[smiley.id] === maxCount);
+    alert(`Winning smileys: ${winningSmileys.map((smiley) => smiley.icon).join(' ')}`);
   };
 
   return (
-    <div>
-      <span>{emoji}</span>
-      <button onClick={handleClick}>Vote</button>
-      <span>{votes} votes</span>
-    </div>
-  );
-}
-
-function GiveBestSmiley() {
-  const [showResult, setShowResult] = useState(false);
-
-  const handleClick = () => {
-    setShowResult(true);
-  };
-
-  const getWinningSmiley = () => {
-    let maxVotes = 0;
-    let winningSmiley = null;
-    SMILEYS.forEach(smiley => {
-      if (smiley.votes > maxVotes) {
-        maxVotes = smiley.votes;
-        winningSmiley = smiley;
-      }
-    });
-    return winningSmiley;
-  };
-
-  return (
-    <div>
-      {SMILEYS.map(smiley => (
-        <Smiley key={smiley.id} id={smiley.id} emoji={smiley.emoji} />
+    <>
+    <h2>Smiley List</h2>
+    <ul>
+      {smileys.map((smiley) => (
+        <li key={smiley.id}>
+          {smiley.icon}{' '}
+          <button onClick={() => handleClick(smiley.id)}>
+           {counts[smiley.id] || 0}
+          </button>
+        </li>
       ))}
-      <button onClick={handleClick}>Show Results</button>
-      {showResult && (
-        <div>
-          Winning smiley: {getWinningSmiley().emoji}
-        </div>
-      )}
-    </div>
+    </ul>
+    <button onClick={handleShowResults}>Show Results</button>
+    </>
   );
-}
+};
 
 export default GiveBestSmiley;
